@@ -81,10 +81,18 @@ public class TripleSatImporter
                 searchRequestDTO.page.pageNo = pageNumber + "";
                 response = ServerUtil.postUrlData(url, createParameters());
                 SearchResponseDTO searchResponseDTO = gson.fromJson(response, SearchResponseDTO.class);
-                total = searchResponseDTO.data.count;
-                System.out.print("Sending request " + pageNumber);
-                System.out.println(" of " + (int)Math.floor(total / Integer.valueOf(searchRequestDTO.page.pageSize)));
-                tripleSatShpSaver.addFeatures(searchResponseDTO.data);
+                if(searchResponseDTO.data != null)
+                {
+                    total = searchResponseDTO.data.count;
+                    System.out.print("Sending request " + pageNumber);
+                    System.out.println(" of " + (int) Math.floor(total / Integer.valueOf(searchRequestDTO.page.pageSize)));
+                    tripleSatShpSaver.addFeatures(searchResponseDTO.data);
+                }
+                else
+                {
+                    System.out.println("No data response, possible reason: " + searchResponseDTO.msg);
+                }
+
             }while ((pageNumber * Integer.valueOf(searchRequestDTO.page.pageSize)) < total);
 
             System.out.println("Saving features to file...");
